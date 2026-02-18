@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Spot - Logo Variations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #FAFAFA;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .logo-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid #E5E5E5;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .logo-section h2 {
+            font-size: 1.5rem;
+            color: #262626;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem;
+            background: #FAFAFA;
+            border-radius: 12px;
+        }
+
+        .logo-item.dark {
+            background: #171717;
+        }
+
+        .label {
+            font-size: 0.875rem;
+            color: #737373;
+            font-weight: 600;
+        }
+
+        .dark .label {
+            color: #A3A3A3;
+        }
+
+        /* Logo Styles */
+        .logo-horizontal {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-text {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-light .logo-text {
+            color: #171717;
+        }
+
+        .logo-dark .logo-text {
+            color: white;
+        }
+
+        .logo-spot {
+            font-weight: 700;
+            opacity: 0.7;
+        }
+
+        /* Icon variants */
+        .icon-circle {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .icon-dot {
+            fill: currentColor;
+        }
+
+        .icon-trend {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .color-primary {
+            color: #171717;
+        }
+
+        .color-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .download-section {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-primary {
+            background: #171717;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #262626;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #171717;
+            border: 1px solid #D4D4D4;
+        }
+
+        .btn-secondary:hover {
+            background: #F5F5F5;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-section">
+        <h2>Trading Spot - Variaciones del Logo</h2>
+        
+        <div class="logo-grid">
+            <!-- Versión 1: Horizontal con ícono círculo + punto -->
+            <div class="logo-item">
+                <div class="logo-horizontal logo-light">
+                    <svg class="logo-icon color-primary" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Círculo exterior -->
+                        <circle class="icon-circle" cx="20" cy="20" r="15"/>
+                        <!-- Punto central -->
+                        <circle class="icon-dot" cx="20" cy="20" r="4"/>
+                        <!-- Mini círculos decorativos (como coordenadas) -->
+                        <circle class="icon-dot" cx="20" cy="8" r="1.5"/>
+                        <circle class="icon-dot" cx="32" cy="20" r="1.5"/>
+                        <circle class="icon-dot" cx="20" cy="32" r="1.5"/>
+                        <circle class="icon-dot" cx="8" cy="20" r="1.5"/>
+                    </svg>
+                    <span class="logo-text">
+                        Trading <span class="logo-spot">Spot</span>
+                    </span>
+                </div>
+                <span class="label">Versión Principal</span>
+            </div>
+
+            <!-- Versión 2: Solo ícono (para app icon) -->
+            <div class="logo-item">
+                <svg class="logo-icon color-primary" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style="width: 60px; height: 60px;">
+                    <circle class="icon-circle" cx="20" cy="20" r="15"/>
+                    <circle class="icon-dot" cx="20" cy="20" r="4"/>
+                    <circle class="icon-dot" cx="20" cy="8" r="1.5"/>
+                    <circle class="icon-dot" cx="32" cy="20" r="1.5"/>
+                    <circle class="icon-dot" cx="20" cy="32" r="1.5"/>
+                    <circle class="icon-dot" cx="8" cy="20" r="1.5"/>
+                </svg>
+                <span class="label">Ícono Solo</span>
+            </div>
+
+            <!-- Versión 3: Dark mode -->
+            <div class="logo-item dark">
+                <div class="logo-horizontal logo-dark">
+                    <svg class="logo-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style="color: white;">
+                        <circle class="icon-circle" cx="20" cy="20" r="15"/>
+                        <circle class="icon-dot" cx="20" cy="20" r="4"/>
+                        <circle class="icon-dot" cx="20" cy="8" r="1.5"/>
+                        <circle class="icon-dot" cx="32" cy="20" r="1.5"/>
+                        <circle class="icon-dot" cx="20" cy="32" r="1.5"/>
+                        <circle class="icon-dot" cx="8" cy="20" r="1.5"/>
+                    </svg>
+                    <span class="logo-text">
+                        Trading <span class="logo-spot">Spot</span>
+                    </span>
+                </div>
+                <span class="label">Dark Mode</span>
+            </div>
+
+            <!-- Versión 4: Con tendencia (alternativa) -->
+            <div class="logo-item">
+                <div class="logo-horizontal logo-light">
+                    <svg class="logo-icon color-primary" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Círculo base -->
+                        <circle class="icon-circle" cx="20" cy="20" r="15"/>
+                        <!-- Línea de tendencia ascendente -->
+                        <path class="icon-trend" d="M 12 24 L 17 19 L 22 21 L 28 14" />
+                        <!-- Punto destacado -->
+                        <circle class="icon-dot" cx="28" cy="14" r="2.5"/>
+                    </svg>
+                    <span class="logo-text">
+                        Trading <span class="logo-spot">Spot</span>
+                    </span>
+                </div>
+                <span class="label">Con Tendencia</span>
+            </div>
+
+            <!-- Versión 5: Texto solo -->
+            <div class="logo-item">
+                <span class="logo-text" style="font-size: 2rem; color: #171717;">
+                    Trading <span class="logo-spot">Spot</span>
+                </span>
+                <span class="label">Solo Texto</span>
+            </div>
+
+            <!-- Versión 6: Compacto (para headers pequeños) -->
+            <div class="logo-item">
+                <div class="logo-horizontal logo-light">
+                    <svg class="logo-icon color-primary" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style="width: 28px; height: 28px;">
+                        <circle class="icon-circle" cx="20" cy="20" r="15"/>
+                        <circle class="icon-dot" cx="20" cy="20" r="4"/>
+                        <circle class="icon-dot" cx="20" cy="8" r="1.5"/>
+                        <circle class="icon-dot" cx="32" cy="20" r="1.5"/>
+                        <circle class="icon-dot" cx="20" cy="32" r="1.5"/>
+                        <circle class="icon-dot" cx="8" cy="20" r="1.5"/>
+                    </svg>
+                    <span class="logo-text" style="font-size: 1.125rem;">
+                        Trading <span class="logo-spot">Spot</span>
+                    </span>
+                </div>
+                <span class="label">Versión Compacta</span>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid #E5E5E5; padding-top: 2rem; margin-top: 2rem;">
+            <h3 style="font-size: 1.125rem; color: #262626; margin-bottom: 1rem; font-weight: 700;">Concepto del Logo</h3>
+            <p style="color: #525252; line-height: 1.6; margin-bottom: 1rem;">
+                El logo representa un <strong>"punto focal"</strong> (spot) en el mercado:
+            </p>
+            <ul style="color: #525252; line-height: 1.8; padding-left: 1.5rem;">
+                <li><strong>Círculo central:</strong> El "spot" - tu punto de referencia en el trading</li>
+                <li><strong>Punto interior:</strong> Precisión y enfoque</li>
+                <li><strong>Puntos cardinales:</strong> Direcciones del mercado (N, S, E, O) - simbolizando análisis en todas direcciones</li>
+                <li><strong>Minimalista:</strong> Elegante y profesional</li>
+            </ul>
+            <p style="color: #525252; line-height: 1.6; margin-top: 1rem;">
+                <strong>Versión alternativa con tendencia:</strong> Muestra una línea ascendente dentro del círculo, representando el objetivo de crecimiento y predicción de tendencias.
+            </p>
+        </div>
+
+        <div class="download-section">
+            <button class="btn btn-primary" onclick="alert('En el proyecto real, estos serán archivos SVG exportables')">Descargar SVG</button>
+            <button class="btn btn-secondary" onclick="alert('En el proyecto real, estos serán archivos PNG exportables')">Descargar PNG</button>
+        </div>
+    </div>
+
+    <!-- SVG Components for Download -->
+    <div style="display: none;">
+        <!-- Logo Principal - Para exportar -->
+        <svg id="logo-main" width="200" height="50" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+            <!-- Ícono -->
+            <circle fill="none" stroke="#171717" stroke-width="2" cx="25" cy="25" r="15"/>
+            <circle fill="#171717" cx="25" cy="25" r="4"/>
+            <circle fill="#171717" cx="25" cy="13" r="1.5"/>
+            <circle fill="#171717" cx="37" cy="25" r="1.5"/>
+            <circle fill="#171717" cx="25" cy="37" r="1.5"/>
+            <circle fill="#171717" cx="13" cy="25" r="1.5"/>
+            
+            <!-- Texto -->
+            <text x="55" y="32" font-family="Nunito" font-size="20" font-weight="800" fill="#171717" letter-spacing="-0.4">Trading</text>
+            <text x="137" y="32" font-family="Nunito" font-size="20" font-weight="700" fill="#171717" opacity="0.7" letter-spacing="-0.4">Spot</text>
+        </svg>
+
+        <!-- Ícono Solo - Para favicon/app icon -->
+        <svg id="icon-only" width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <circle fill="none" stroke="#171717" stroke-width="2" cx="20" cy="20" r="15"/>
+            <circle fill="#171717" cx="20" cy="20" r="4"/>
+            <circle fill="#171717" cx="20" cy="8" r="1.5"/>
+            <circle fill="#171717" cx="32" cy="20" r="1.5"/>
+            <circle fill="#171717" cx="20" cy="32" r="1.5"/>
+            <circle fill="#171717" cx="8" cy="20" r="1.5"/>
+        </svg>
+    </div>
+
+    <div class="logo-section">
+        <h2>Uso Recomendado</h2>
+        <div style="display: grid; gap: 1.5rem;">
+            <div style="padding: 1.5rem; background: #F5F5F5; border-radius: 8px;">
+                <strong style="color: #262626; display: block; margin-bottom: 0.5rem;">Header / Navegación</strong>
+                <span style="color: #525252; font-size: 0.875rem;">Versión Principal o Compacta</span>
+            </div>
+            <div style="padding: 1.5rem; background: #F5F5F5; border-radius: 8px;">
+                <strong style="color: #262626; display: block; margin-bottom: 0.5rem;">Favicon / App Icon</strong>
+                <span style="color: #525252; font-size: 0.875rem;">Ícono Solo (cuadrado 512x512px)</span>
+            </div>
+            <div style="padding: 1.5rem; background: #F5F5F5; border-radius: 8px;">
+                <strong style="color: #262626; display: block; margin-bottom: 0.5rem;">Landing Page Hero</strong>
+                <span style="color: #525252; font-size: 0.875rem;">Versión Principal (grande)</span>
+            </div>
+            <div style="padding: 1.5rem; background: #F5F5F5; border-radius: 8px;">
+                <strong style="color: #262626; display: block; margin-bottom: 0.5rem;">Emails</strong>
+                <span style="color: #525252; font-size: 0.875rem;">Versión Principal</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
