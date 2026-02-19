@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -18,7 +19,8 @@ function ResendButton() {
   )
 }
 
-export default function VerifyEmailPage() {
+// 1. Extraemos la lógica que usa useSearchParams a un componente interno
+function VerifyEmailContent() {
   const [state, formAction] = useFormState(resendVerificationAction, null)
   const searchParams = useSearchParams()
   const email = searchParams.get('email') ?? ''
@@ -54,13 +56,13 @@ export default function VerifyEmailPage() {
       </p>
 
       {state?.error && (
-        <div className="mb-4 bg-danger-50 border border-danger-100 text-danger-700 rounded-lg px-4 py-3 text-sm">
+        <div className="mb-4 bg-red-50 border border-red-100 text-red-700 rounded-lg px-4 py-3 text-sm">
           {state.error}
         </div>
       )}
 
       {state?.success && (
-        <div className="mb-4 bg-success-50 border border-success-100 text-success-700 rounded-lg px-4 py-3 text-sm">
+        <div className="mb-4 bg-green-50 border border-green-100 text-green-700 rounded-lg px-4 py-3 text-sm">
           {state.success}
         </div>
       )}
@@ -76,5 +78,18 @@ export default function VerifyEmailPage() {
         </Link>
       </p>
     </div>
+  )
+}
+
+// 2. El componente principal solo envuelve al contenido en Suspense
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm text-center">
+        <p className="text-sm text-gray-500">Cargando...</p>
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   )
 }
