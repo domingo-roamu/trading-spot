@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { Sidebar } from '@/components/dashboard/Sidebar'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,7 +16,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const { data: profile } = await supabase
     .from('user_profiles')
-    .select('onboarding_completed')
+    .select('full_name, onboarding_completed')
     .eq('user_id', user.id)
     .single()
 
@@ -23,5 +24,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect('/onboarding')
   }
 
-  return <>{children}</>
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar
+        user={{
+          email: user.email!,
+          fullName: profile?.full_name ?? null,
+        }}
+      />
+      <main className="flex-1 overflow-auto min-w-0">{children}</main>
+    </div>
+  )
 }

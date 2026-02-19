@@ -1,5 +1,11 @@
+import { DollarSign, TrendingUp, Percent, BarChart2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { logoutAction } from '@/lib/auth/actions'
+import { getDashboardData, computeMetrics } from '@/lib/dashboard/queries'
+import { MetricCard } from '@/components/dashboard/MetricCard'
+import { WatchlistSection } from '@/components/dashboard/WatchlistSection'
+import { formatCurrency, formatPercent, formatWeekRange } from '@/lib/utils'
+import type { Trade } from '@/types'
+import type { EnrichedWatchlistItem } from '@/components/dashboard/WatchlistTable'
 
 export default async function DashboardPage() {
   const supabase = createClient()
@@ -7,39 +13,92 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
+  const { watchlist, analyses, trades, weekStart } = await getDashboardData(
+    supabase,
+    user!.id
+  )
+
+  const metrics = computeMetrics(trades)
+
+  // Build analysis map (ticker → latest analysis for current week)
+  const analysisMap = new Map(analyses.map((a) => [a.ticker, a]))
+
+  // Build PnL map per ticker (all closed trades)
+  const pnlByTicker = trades.reduce<Record<string, number>>((acc, t: Trade) => {
+    if (t.status === 'closed' && t.profit_loss_net != null) {
+      acc[t.ticker] = (acc[t.ticker] ?? 0) + t.profit_loss_net
+    }
+    return acc
+  }, {})
+
+  // Enrich watchlist items
+  const enrichedItems: EnrichedWatchlistItem[] = watchlist.map((item) => ({
+    watchlistItem: item,
+    analysis: analysisMap.get(item.ticker) ?? null,
+    pnlAccumulated: pnlByTicker[item.ticker] ?? 0,
+  }))
+
+  const isEmpty = metrics.trade_count === 0
+
+  // Determine PnL color
+  const pnlColor = isEmpty
+    ? 'neutral'
+    : metrics.total_pnl_net > 0
+    ? 'positive'
+    : metrics.total_pnl_net < 0
+    ? 'negative'
+    : 'neutral'
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
-      <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm max-w-md w-full text-center">
-        <div className="w-12 h-12 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-            />
-          </svg>
-        </div>
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Dashboard</h1>
-        <p className="text-sm text-gray-500 mb-1">Próximamente — en construcción</p>
-        {user?.email && (
-          <p className="text-xs text-gray-400 mt-2 font-mono">{user.email}</p>
-        )}
-        <form action={logoutAction} className="mt-6">
-          <button
-            type="submit"
-            className="text-sm text-gray-500 hover:text-gray-700 underline transition-colors"
-          >
-            Cerrar sesión
-          </button>
-        </form>
+    <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-sm text-gray-500 mt-0.5">
+          Semana {formatWeekRange(weekStart)}
+        </p>
       </div>
+
+      {/* Metric cards — 2×2 en móvil, 4×1 en lg */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+          label="P&L neto"
+          value={formatCurrency(metrics.total_pnl_net)}
+          icon={<DollarSign size={16} />}
+          empty={isEmpty}
+          valueColor={pnlColor}
+        />
+        <MetricCard
+          label="Comisiones"
+          value={formatCurrency(metrics.total_commissions)}
+          icon={<BarChart2 size={16} />}
+          empty={isEmpty}
+          valueColor="neutral"
+        />
+        <MetricCard
+          label="Win rate"
+          value={formatPercent(metrics.win_rate, false)}
+          icon={<Percent size={16} />}
+          empty={isEmpty}
+          valueColor={
+            isEmpty
+              ? 'neutral'
+              : metrics.win_rate >= 50
+              ? 'positive'
+              : 'negative'
+          }
+        />
+        <MetricCard
+          label="Operaciones"
+          value={String(metrics.trade_count)}
+          icon={<TrendingUp size={16} />}
+          empty={isEmpty}
+          valueColor="neutral"
+        />
+      </div>
+
+      {/* Watchlist card */}
+      <WatchlistSection items={enrichedItems} count={watchlist.length} />
     </div>
   )
 }
