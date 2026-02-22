@@ -47,7 +47,6 @@ const navItems: NavItem[] = [
     icon: <BarChart2 size={20} />,
     label: 'Analytics',
     href: '/dashboard/analytics',
-    disabled: true,
   },
   {
     icon: <Settings size={20} />,
