@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { runAnalysisForTickers } from '@/lib/agent/run-analysis'
+import { sendWeeklyReports } from '@/lib/email/send-weekly-reports'
 
 // ─── Manual trigger (authenticated user) ────────────────────────────────────
 
@@ -84,7 +85,14 @@ export async function GET(request: NextRequest) {
   try {
     const result = await runAnalysisForTickers(uniqueTickers, serviceClient)
     console.log(`[agent/cron] Run complete: ${result.successful} ok, ${result.failed} failed, ${result.skipped} skipped`)
-    return NextResponse.json(result)
+
+    let emailResult = { sent: 0, failed: 0, skipped: 0 }
+    if (result.successful > 0) {
+      emailResult = await sendWeeklyReports(serviceClient)
+      console.log(`[agent/cron] Emails: ${emailResult.sent} enviados, ${emailResult.failed} fallidos, ${emailResult.skipped} omitidos`)
+    }
+
+    return NextResponse.json({ ...result, emails: emailResult })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[agent/cron GET] Unexpected error:', msg)

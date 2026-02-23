@@ -230,6 +230,28 @@ export type Database = {
         Relationships: []
       }
 
+      waitlist_requests: {
+        Row: {
+          id:         string
+          name:       string
+          email:      string
+          message:    string | null
+          status:     'pending' | 'invited' | 'rejected'
+          created_at: string
+        }
+        Insert: {
+          id?:      string
+          name:     string
+          email:    string
+          message?: string | null
+          status?:  'pending' | 'invited' | 'rejected'
+        }
+        Update: {
+          status?: 'pending' | 'invited' | 'rejected'
+        }
+        Relationships: []
+      }
+
       report_generations: {
         Row: {
           id:                   string

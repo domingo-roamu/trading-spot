@@ -1,9 +1,8 @@
 'use client'
 
 import { useFormState, useFormStatus } from 'react-dom'
-import { useState } from 'react'
 import Link from 'next/link'
-import { signupAction } from '@/lib/auth/actions'
+import { joinWaitlistAction } from '@/lib/waitlist/actions'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -13,49 +12,67 @@ function SubmitButton() {
       disabled={pending}
       className="w-full bg-gray-900 text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
     >
-      {pending ? 'Creando cuenta…' : 'Crear cuenta'}
+      {pending ? 'Enviando…' : 'Unirme a la lista'}
     </button>
   )
 }
 
-export default function SignupPage() {
-  const [state, formAction] = useFormState(signupAction, null)
-  const [clientError, setClientError] = useState<string | null>(null)
+export default function WaitlistPage() {
+  const [state, formAction] = useFormState(joinWaitlistAction, null)
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    const form = e.currentTarget
-    const password = (form.elements.namedItem('password') as HTMLInputElement).value
-    const confirm = (form.elements.namedItem('confirmPassword') as HTMLInputElement).value
-
-    if (password.length < 8) {
-      e.preventDefault()
-      setClientError('La contraseña debe tener al menos 8 caracteres.')
-      return
-    }
-    if (password !== confirm) {
-      e.preventDefault()
-      setClientError('Las contraseñas no coinciden.')
-      return
-    }
-    setClientError(null)
+  if (state?.success) {
+    return (
+      <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm text-center">
+        <div className="w-12 h-12 rounded-full bg-success-50 flex items-center justify-center mx-auto mb-4">
+          <svg className="w-6 h-6 text-success-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 className="text-lg font-bold text-gray-900 mb-2">¡Estás en la lista!</h2>
+        <p className="text-sm text-gray-500">
+          Te avisaremos por email cuando haya un lugar disponible.
+        </p>
+        <Link
+          href="/login"
+          className="mt-6 inline-block text-sm font-medium text-gray-900 hover:underline"
+        >
+          ← Volver al inicio de sesión
+        </Link>
+      </div>
+    )
   }
-
-  const error = clientError ?? state?.error
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900">Crea tu cuenta</h1>
-        <p className="text-sm text-gray-500 mt-1">Empieza tu análisis semanal de trading.</p>
+        <h1 className="text-xl font-bold text-gray-900">Lista de espera</h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Trading Spot está en acceso limitado. Anotate y te avisamos cuando haya lugar.
+        </p>
       </div>
 
-      {error && (
+      {state?.error && (
         <div className="mb-4 bg-danger-50 border border-danger-100 text-danger-700 rounded-lg px-4 py-3 text-sm">
-          {error}
+          {state.error}
         </div>
       )}
 
-      <form action={formAction} onSubmit={handleSubmit} className="space-y-4">
+      <form action={formAction} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
+            Nombre
+          </label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            autoComplete="name"
+            required
+            placeholder="Tu nombre"
+            className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600/10 focus:border-gray-600 transition-colors"
+          />
+        </div>
+
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
             Email
@@ -72,33 +89,15 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
-            Contraseña
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1.5">
+            ¿Por qué te interesa? <span className="text-gray-400 font-normal">(opcional)</span>
           </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            placeholder="Mínimo 8 caracteres"
-            className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600/10 focus:border-gray-600 transition-colors"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1.5">
-            Confirmar contraseña
-          </label>
-          <input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            autoComplete="new-password"
-            required
-            placeholder="Repite tu contraseña"
-            className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600/10 focus:border-gray-600 transition-colors"
+          <textarea
+            id="message"
+            name="message"
+            rows={3}
+            placeholder="Contanos un poco sobre vos…"
+            className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-600/10 focus:border-gray-600 transition-colors resize-none"
           />
         </div>
 
@@ -106,9 +105,9 @@ export default function SignupPage() {
       </form>
 
       <p className="mt-6 text-center text-sm text-gray-500">
-        ¿Ya tienes cuenta?{' '}
+        ¿Ya tenés acceso?{' '}
         <Link href="/login" className="font-medium text-gray-900 hover:underline">
-          Inicia sesión
+          Iniciar sesión
         </Link>
       </p>
     </div>

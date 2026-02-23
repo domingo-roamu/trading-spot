@@ -76,9 +76,9 @@ export default function LoginPage() {
       </form>
 
       <p className="mt-6 text-center text-sm text-gray-500">
-        ¿No tienes cuenta?{' '}
+        ¿No tenés acceso?{' '}
         <Link href="/signup" className="font-medium text-gray-900 hover:underline">
-          Regístrate gratis
+          Lista de espera
         </Link>
       </p>
     </div>
