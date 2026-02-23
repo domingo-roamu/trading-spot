@@ -8,6 +8,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+
+export const maxDuration = 300 // 5 min — necesario para análisis de múltiples tickers
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { runAnalysisForTickers } from '@/lib/agent/run-analysis'
