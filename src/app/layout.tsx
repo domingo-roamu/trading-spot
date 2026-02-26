@@ -25,6 +25,14 @@ export const metadata: Metadata = {
     'Plataforma de análisis de trading semanal con IA. Reduce tu tiempo de research de horas a minutos.',
   keywords: ['trading', 'análisis', 'IA', 'acciones', 'ETF', 'mercado'],
   authors: [{ name: 'Trading Spot' }],
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     title: 'Trading Spot',
     description: 'Análisis semanal de trading impulsado por IA',
