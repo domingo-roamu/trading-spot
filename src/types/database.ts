@@ -252,6 +252,38 @@ export type Database = {
         Relationships: []
       }
 
+      market_radar: {
+        Row: {
+          id:         string
+          ticker:     string
+          name:       string
+          sector:     string
+          type:       string
+          price:      number | null
+          change_7d:  number | null
+          change_30d: number | null
+          updated_at: string
+        }
+        Insert: {
+          id?:         string
+          ticker:      string
+          name:        string
+          sector:      string
+          type?:       string
+          price?:      number | null
+          change_7d?:  number | null
+          change_30d?: number | null
+          updated_at?: string
+        }
+        Update: {
+          price?:      number | null
+          change_7d?:  number | null
+          change_30d?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+
       report_generations: {
         Row: {
           id:                   string

@@ -3,6 +3,10 @@
     {
       "path": "/api/agent/run",
       "schedule": "0 22 * * 0"
+    },
+    {
+      "path": "/api/radar/refresh",
+      "schedule": "0 6 * * 1-5"
     }
   ]
 }

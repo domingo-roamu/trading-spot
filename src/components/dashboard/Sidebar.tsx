@@ -8,6 +8,7 @@ import {
   Eye,
   TrendingUp,
   BarChart2,
+  Radar,
   Settings,
   ChevronRight,
   ChevronLeft,
@@ -42,6 +43,11 @@ const navItems: NavItem[] = [
     icon: <TrendingUp size={20} />,
     label: 'Trades',
     href: '/dashboard/trades',
+  },
+  {
+    icon: <Radar size={20} />,
+    label: 'Radar',
+    href: '/dashboard/radar',
   },
   {
     icon: <BarChart2 size={20} />,
