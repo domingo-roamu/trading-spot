@@ -1,7 +1,7 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database'
 import { getWeekStart } from '@/lib/utils'
-import { resend, FROM_EMAIL } from './resend'
+import { getResend, FROM_EMAIL } from './resend'
 import { buildWeeklyReportEmail } from './weekly-report'
 
 export async function sendWeeklyReports(
@@ -88,7 +88,7 @@ export async function sendWeeklyReports(
     let sendError: string | null = null
 
     try {
-      const { error: resendError } = await resend.emails.send({
+      const { error: resendError } = await getResend().emails.send({
         from: FROM_EMAIL,
         to: email,
         subject,
