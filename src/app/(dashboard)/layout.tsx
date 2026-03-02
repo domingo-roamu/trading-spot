@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { MobileNav } from '@/components/dashboard/MobileNav'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,7 +33,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
           fullName: profile?.full_name ?? null,
         }}
       />
-      <main className="flex-1 overflow-auto min-w-0">{children}</main>
+      <main className="flex-1 overflow-auto min-w-0 pb-16 md:pb-0">{children}</main>
+      <MobileNav />
     </div>
   )
 }

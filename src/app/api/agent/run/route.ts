@@ -88,11 +88,10 @@ export async function GET(request: NextRequest) {
     const result = await runAnalysisForTickers(uniqueTickers, serviceClient)
     console.log(`[agent/cron] Run complete: ${result.successful} ok, ${result.failed} failed, ${result.skipped} skipped`)
 
-    let emailResult = { sent: 0, failed: 0, skipped: 0 }
-    if (result.successful > 0) {
-      emailResult = await sendWeeklyReports(serviceClient)
-      console.log(`[agent/cron] Emails: ${emailResult.sent} enviados, ${emailResult.failed} fallidos, ${emailResult.skipped} omitidos`)
-    }
+    // Send weekly reports regardless of whether analyses were freshly generated
+    // or already existed (skipped) — the email should go out every Sunday
+    const emailResult = await sendWeeklyReports(serviceClient)
+    console.log(`[agent/cron] Emails: ${emailResult.sent} enviados, ${emailResult.failed} fallidos, ${emailResult.skipped} omitidos`)
 
     return NextResponse.json({ ...result, emails: emailResult })
   } catch (err) {
