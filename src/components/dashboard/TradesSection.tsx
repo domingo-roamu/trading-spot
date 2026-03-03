@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
+import { useRouter } from 'next/navigation'
 import { TrendingUp, BarChart2, X } from 'lucide-react'
 import { cn, formatCurrency, formatPercent } from '@/lib/utils'
 import {
@@ -30,16 +31,16 @@ function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: st
 
 // ─── Open Trade Modal ─────────────────────────────────────────────────────────
 
-function OpenTradeModal({ onClose, initialTicker }: { onClose: () => void; initialTicker?: string }) {
+function OpenTradeModal({ onClose, onSuccess, initialTicker }: { onClose: () => void; onSuccess?: () => void; initialTicker?: string }) {
   const [state, formAction] = useFormState<TradeState, FormData>(openTradeAction, null)
   const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
     if (state?.success) {
       formRef.current?.reset()
-      onClose()
+      onSuccess ? onSuccess() : onClose()
     }
-  }, [state, onClose])
+  }, [state, onClose, onSuccess])
 
   const today = new Date().toISOString().split('T')[0]
 
@@ -614,13 +615,25 @@ interface TradesSectionProps {
 }
 
 export function TradesSection({ openTrades, closedTrades, initialTicker }: TradesSectionProps) {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<'open' | 'closed'>('open')
   const [openBuyModal, setOpenBuyModal] = useState(!!initialTicker)
   const [tradeToClose, setTradeToClose] = useState<Trade | null>(null)
 
+  // Si vinimos desde watchlist, al registrar el trade volvemos ahí
+  const handleBuySuccess = initialTicker
+    ? () => router.push('/dashboard')
+    : undefined
+
   return (
     <>
-      {openBuyModal && <OpenTradeModal onClose={() => setOpenBuyModal(false)} initialTicker={initialTicker} />}
+      {openBuyModal && (
+        <OpenTradeModal
+          onClose={() => setOpenBuyModal(false)}
+          onSuccess={handleBuySuccess}
+          initialTicker={initialTicker}
+        />
+      )}
       {tradeToClose && <CloseTradeModal trade={tradeToClose} onClose={() => setTradeToClose(null)} />}
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
