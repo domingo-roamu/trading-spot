@@ -182,19 +182,26 @@ export function WatchlistSection({ items, count }: WatchlistSectionProps) {
     startTransition(async () => {
       try {
         const res = await fetch('/api/agent/run', { method: 'POST' })
-        const data = await res.json()
+
+        // Parse JSON separately — if server crashes Vercel returns HTML, not JSON
+        let data: Record<string, unknown>
+        try {
+          data = await res.json()
+        } catch {
+          setAnalysisStatus('error')
+          setAnalysisMsg(`Error del servidor (HTTP ${res.status}) — revisa los logs en Vercel`)
+          return
+        }
 
         if (!res.ok) {
           setAnalysisStatus('error')
-          setAnalysisMsg(data.error ?? 'Error desconocido')
+          setAnalysisMsg((data.error as string) ?? `Error ${res.status}`)
           return
         }
 
         if (data.successful === 0 && data.failed > 0) {
           setAnalysisStatus('error')
-          setAnalysisMsg(
-            `${data.failed} análisis fallaron. Verifica que las API keys estén configuradas y reinicia el servidor.`
-          )
+          setAnalysisMsg(`${data.failed} análisis fallaron — revisa que ANTHROPIC_API_KEY y FINNHUB_API_KEY estén en Vercel`)
           return
         }
 
@@ -203,9 +210,9 @@ export function WatchlistSection({ items, count }: WatchlistSectionProps) {
           `${data.successful} análisis generados · ${data.skipped} ya estaban al día · ${data.failed} errores`
         )
         router.refresh()
-      } catch {
+      } catch (err) {
         setAnalysisStatus('error')
-        setAnalysisMsg('No se pudo conectar con el servidor')
+        setAnalysisMsg(`Error de red: ${err instanceof Error ? err.message : 'desconocido'}`)
       }
     })
   }
