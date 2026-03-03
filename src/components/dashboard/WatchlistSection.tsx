@@ -205,9 +205,11 @@ export function WatchlistSection({ items, count }: WatchlistSectionProps) {
           return
         }
 
+        const remaining = (data.remaining as number) ?? 0
+        const extra = remaining > 0 ? ` · ${remaining} pendientes para el cron del domingo` : ''
         setAnalysisStatus('done')
         setAnalysisMsg(
-          `${data.successful} análisis generados · ${data.skipped} ya estaban al día · ${data.failed} errores`
+          `${data.successful} análisis generados · ${data.skipped} ya estaban al día · ${data.failed} errores${extra}`
         )
         router.refresh()
       } catch (err) {

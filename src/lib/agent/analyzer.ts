@@ -67,7 +67,7 @@ export async function analyzeWithClaude(ctx: TickerContext): Promise<AnalyzerRes
 
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 4096,
+    max_tokens: 8192,
     system:
       'You are an expert financial analyst. You respond ONLY with valid JSON matching the schema provided. No markdown, no explanations outside the JSON object.',
     messages: [{ role: 'user', content: prompt }],

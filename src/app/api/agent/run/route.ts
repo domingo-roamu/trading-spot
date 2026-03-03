@@ -37,18 +37,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: watchlistError.message }, { status: 500 })
   }
 
-  const tickers = (watchlist ?? []).map((w) => w.ticker)
+  const allTickers = (watchlist ?? []).map((w) => w.ticker)
 
-  if (tickers.length === 0) {
+  if (allTickers.length === 0) {
     return NextResponse.json({ error: 'Tu watchlist está vacío' }, { status: 400 })
   }
+
+  // Manual trigger: cap at 4 tickers to avoid Vercel's 300s timeout.
+  // Each ticker takes ~60-90s (Finnhub + Claude). The Sunday cron covers the rest.
+  const MAX_MANUAL = 4
+  const tickers = allTickers.slice(0, MAX_MANUAL)
+  const remaining = allTickers.length - tickers.length
 
   // Use service client for writing to weekly_analyses (bypasses RLS)
   const serviceClient = createServiceClient()
 
   try {
     const result = await runAnalysisForTickers(tickers, serviceClient)
-    return NextResponse.json(result)
+    return NextResponse.json({ ...result, remaining })
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[agent/run POST] Unexpected error:', msg)
