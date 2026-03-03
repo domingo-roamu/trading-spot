@@ -6,7 +6,12 @@ import { TradesSection } from '@/components/dashboard/TradesSection'
 import { formatCurrency, formatPercent } from '@/lib/utils'
 import type { Trade } from '@/types'
 
-export default async function TradesPage() {
+export default async function TradesPage({
+  searchParams,
+}: {
+  searchParams?: { ticker?: string }
+}) {
+  const initialTicker = searchParams?.ticker?.toUpperCase()
   const supabase = createClient()
   const {
     data: { user },
@@ -108,7 +113,7 @@ export default async function TradesPage() {
       </div>
 
       {/* Trades section */}
-      <TradesSection openTrades={openTrades} closedTrades={closedTrades} />
+      <TradesSection openTrades={openTrades} closedTrades={closedTrades} initialTicker={initialTicker} />
     </div>
   )
 }

@@ -22,10 +22,11 @@ export interface TickerResult {
 
 interface TickerSearchProps {
   onSelect?: (result: TickerResult) => void
+  initialValue?: string
 }
 
-export function TickerSearch({ onSelect }: TickerSearchProps) {
-  const [query, setQuery] = useState('')
+export function TickerSearch({ onSelect, initialValue }: TickerSearchProps) {
+  const [query, setQuery] = useState(initialValue ?? '')
   const [results, setResults] = useState<TickerResult[]>([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)

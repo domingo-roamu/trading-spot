@@ -30,7 +30,7 @@ function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: st
 
 // ─── Open Trade Modal ─────────────────────────────────────────────────────────
 
-function OpenTradeModal({ onClose }: { onClose: () => void }) {
+function OpenTradeModal({ onClose, initialTicker }: { onClose: () => void; initialTicker?: string }) {
   const [state, formAction] = useFormState<TradeState, FormData>(openTradeAction, null)
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -63,7 +63,7 @@ function OpenTradeModal({ onClose }: { onClose: () => void }) {
               <label className="block text-xs font-medium text-gray-700 mb-1">
                 Instrumento <span className="text-danger-600">*</span>
               </label>
-              <TickerSearch />
+              <TickerSearch initialValue={initialTicker} />
             </div>
 
             <div>
@@ -610,16 +610,17 @@ function ClosedTradesTable({ trades }: { trades: Trade[] }) {
 interface TradesSectionProps {
   openTrades: Trade[]
   closedTrades: Trade[]
+  initialTicker?: string
 }
 
-export function TradesSection({ openTrades, closedTrades }: TradesSectionProps) {
+export function TradesSection({ openTrades, closedTrades, initialTicker }: TradesSectionProps) {
   const [activeTab, setActiveTab] = useState<'open' | 'closed'>('open')
-  const [openBuyModal, setOpenBuyModal] = useState(false)
+  const [openBuyModal, setOpenBuyModal] = useState(!!initialTicker)
   const [tradeToClose, setTradeToClose] = useState<Trade | null>(null)
 
   return (
     <>
-      {openBuyModal && <OpenTradeModal onClose={() => setOpenBuyModal(false)} />}
+      {openBuyModal && <OpenTradeModal onClose={() => setOpenBuyModal(false)} initialTicker={initialTicker} />}
       {tradeToClose && <CloseTradeModal trade={tradeToClose} onClose={() => setTradeToClose(null)} />}
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">

@@ -353,7 +353,7 @@ export function WatchlistTable({ items, onAddClick }: WatchlistTableProps) {
                         <span className="rounded-md px-2.5 py-1 text-xs text-gray-300">Sin análisis</span>
                       )}
                       <Link
-                        href="/dashboard/trades"
+                        href={`/dashboard/trades?ticker=${encodeURIComponent(watchlistItem.ticker)}`}
                         className="rounded-md border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
                       >
                         + Trade
