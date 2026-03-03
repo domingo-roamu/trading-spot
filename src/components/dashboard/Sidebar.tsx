@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { Logo, LogoIcon } from '@/components/layout/Logo'
 import { logoutAction } from '@/lib/auth/actions'
+import { MarketStatus } from '@/components/dashboard/MarketStatus'
 import { cn } from '@/lib/utils'
 
 const SIDEBAR_KEY = 'ts_sidebar_collapsed'
@@ -94,7 +95,7 @@ export function Sidebar({ user }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'hidden md:flex flex-col relative border-r border-gray-200 bg-white transition-all duration-200 ease-in-out shrink-0',
+        'hidden md:flex flex-col relative border-r border-gray-200 bg-white transition-all duration-200 ease-in-out shrink-0 h-screen sticky top-0',
         mounted && collapsed ? 'w-16' : 'w-60'
       )}
     >
@@ -168,6 +169,11 @@ export function Sidebar({ user }: SidebarProps) {
           })}
         </ul>
       </nav>
+
+      {/* Market status */}
+      <div className={cn('border-t border-gray-100', mounted && collapsed ? 'flex justify-center py-2' : '')}>
+        <MarketStatus compact={mounted && collapsed} />
+      </div>
 
       {/* Footer */}
       <div className={cn('border-t border-gray-100 p-3', mounted && collapsed && 'px-0')}>

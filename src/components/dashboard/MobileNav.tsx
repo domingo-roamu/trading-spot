@@ -9,6 +9,7 @@ import {
   BarChart2,
   Settings,
 } from 'lucide-react'
+import { MarketStatus } from '@/components/dashboard/MarketStatus'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -23,7 +24,7 @@ export function MobileNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 flex md:hidden border-t border-gray-200 bg-white">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 flex md:hidden border-t border-gray-200 bg-white relative">
       {navItems.map(({ icon: Icon, label, href }) => {
         const isActive = pathname === href
         return (
@@ -40,6 +41,10 @@ export function MobileNav() {
           </Link>
         )
       })}
+      {/* Market status dot — top-right corner */}
+      <div className="absolute top-1.5 right-2">
+        <MarketStatus compact />
+      </div>
     </nav>
   )
 }
