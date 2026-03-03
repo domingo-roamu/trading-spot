@@ -180,8 +180,13 @@ export function WatchlistSection({ items, count }: WatchlistSectionProps) {
     setAnalysisMsg('')
 
     startTransition(async () => {
+      // Abort 30s before Vercel's hard 300s limit so we control the UX
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 270_000)
+
       try {
-        const res = await fetch('/api/agent/run', { method: 'POST' })
+        const res = await fetch('/api/agent/run', { method: 'POST', signal: controller.signal })
+        clearTimeout(timer)
 
         // Parse JSON separately — if server crashes Vercel returns HTML, not JSON
         let data: Record<string, unknown>
@@ -205,14 +210,20 @@ export function WatchlistSection({ items, count }: WatchlistSectionProps) {
           return
         }
 
-        const remaining = (data.remaining as number) ?? 0
-        const extra = remaining > 0 ? ` · ${remaining} pendientes para el cron del domingo` : ''
         setAnalysisStatus('done')
         setAnalysisMsg(
-          `${data.successful} análisis generados · ${data.skipped} ya estaban al día · ${data.failed} errores${extra}`
+          `${data.successful} análisis generados · ${data.skipped} ya estaban al día · ${data.failed} errores`
         )
         router.refresh()
       } catch (err) {
+        clearTimeout(timer)
+        // AbortError = tiempo agotado, pero los análisis completados SÍ están guardados en BD
+        if (err instanceof Error && err.name === 'AbortError') {
+          setAnalysisStatus('done')
+          setAnalysisMsg('Tiempo agotado — los análisis completados ya están guardados. Recarga la página y vuelve a presionar para continuar con los restantes.')
+          router.refresh()
+          return
+        }
         setAnalysisStatus('error')
         setAnalysisMsg(`Error de red: ${err instanceof Error ? err.message : 'desconocido'}`)
       }
