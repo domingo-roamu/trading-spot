@@ -177,55 +177,71 @@ export function WatchlistSection({ items, count }: WatchlistSectionProps) {
   const handleRunAnalysis = () => {
     if (count === 0) return
     setAnalysisStatus('running')
-    setAnalysisMsg('')
+    setAnalysisMsg(`Analizando ${count} tickers...`)
 
     startTransition(async () => {
-      // Abort 30s before Vercel's hard 300s limit so we control the UX
-      const controller = new AbortController()
-      const timer = setTimeout(() => controller.abort(), 270_000)
+      let knownProcessed = 0
 
-      try {
-        const res = await fetch('/api/agent/run', { method: 'POST', signal: controller.signal })
-        clearTimeout(timer)
+      // Loop: Cloudflare corta conexiones a ~100s, abortamos a 85s y reintentamos
+      // automáticamente. Los análisis completados se guardan en BD por ticker.
+      while (true) {
+        const controller = new AbortController()
+        const timer = setTimeout(() => controller.abort(), 85_000)
 
-        // Parse JSON separately — if server crashes Vercel returns HTML, not JSON
-        let data: Record<string, unknown>
         try {
-          data = await res.json()
-        } catch {
-          setAnalysisStatus('error')
-          setAnalysisMsg(`Error del servidor (HTTP ${res.status}) — revisa los logs en Vercel`)
-          return
-        }
+          if (knownProcessed > 0) {
+            setAnalysisMsg(`${knownProcessed} listos · analizando ${count - knownProcessed} restantes...`)
+          }
 
-        if (!res.ok) {
-          setAnalysisStatus('error')
-          setAnalysisMsg((data.error as string) ?? `Error ${res.status}`)
-          return
-        }
+          const res = await fetch('/api/agent/run', { method: 'POST', signal: controller.signal })
+          clearTimeout(timer)
 
-        if (data.successful === 0 && data.failed > 0) {
-          setAnalysisStatus('error')
-          setAnalysisMsg(`${data.failed} análisis fallaron — revisa que ANTHROPIC_API_KEY y FINNHUB_API_KEY estén en Vercel`)
-          return
-        }
+          let data: Record<string, unknown> = {}
+          try {
+            data = await res.json()
+          } catch {
+            setAnalysisStatus('error')
+            setAnalysisMsg(`Error del servidor (HTTP ${res.status}) — revisa los logs en Vercel`)
+            return
+          }
 
-        setAnalysisStatus('done')
-        setAnalysisMsg(
-          `${data.successful} análisis generados · ${data.skipped} ya estaban al día · ${data.failed} errores`
-        )
-        router.refresh()
-      } catch (err) {
-        clearTimeout(timer)
-        // AbortError = tiempo agotado, pero los análisis completados SÍ están guardados en BD
-        if (err instanceof Error && err.name === 'AbortError') {
-          setAnalysisStatus('done')
-          setAnalysisMsg('Tiempo agotado — los análisis completados ya están guardados. Recarga la página y vuelve a presionar para continuar con los restantes.')
+          if (!res.ok) {
+            setAnalysisStatus('error')
+            setAnalysisMsg((data.error as string) ?? `Error ${res.status}`)
+            return
+          }
+
+          const successful = (data.successful as number) ?? 0
+          const skipped    = (data.skipped   as number) ?? 0
+          const failed     = (data.failed    as number) ?? 0
+          knownProcessed = successful + skipped
+
           router.refresh()
+
+          // successful + skipped + failed === total watchlist → todos procesados
+          if (successful + skipped + failed >= count) {
+            setAnalysisStatus('done')
+            const parts: string[] = []
+            if (successful > 0) parts.push(`${successful} análisis nuevos`)
+            if (skipped > 0)    parts.push(`${skipped} ya estaban al día`)
+            if (failed > 0)     parts.push(`${failed} con error`)
+            setAnalysisMsg(parts.join(' · '))
+            return
+          }
+          // Aún quedan tickers → el loop sigue
+
+        } catch (err) {
+          clearTimeout(timer)
+          if (err instanceof DOMException && err.name === 'AbortError') {
+            // Cloudflare cortó la conexión — los análisis completados ya están en BD
+            router.refresh()
+            await new Promise((r) => setTimeout(r, 1500)) // pausa para el refresh
+            continue // siguiente batch automáticamente
+          }
+          setAnalysisStatus('error')
+          setAnalysisMsg(`Error de red: ${err instanceof Error ? err.message : 'desconocido'}`)
           return
         }
-        setAnalysisStatus('error')
-        setAnalysisMsg(`Error de red: ${err instanceof Error ? err.message : 'desconocido'}`)
       }
     })
   }
