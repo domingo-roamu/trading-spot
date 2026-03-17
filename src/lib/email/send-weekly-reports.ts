@@ -49,6 +49,7 @@ export async function sendWeeklyReports(
     const email = emailByUserId.get(user_id)
 
     if (!email) {
+      console.warn(`[sendWeeklyReports] No email found for user ${user_id}, skipping`)
       skipped++
       continue
     }
@@ -59,7 +60,13 @@ export async function sendWeeklyReports(
       .select('ticker')
       .eq('user_id', user_id)
 
-    if (watchlistError || !watchlist || watchlist.length === 0) {
+    if (watchlistError) {
+      console.warn(`[sendWeeklyReports] Watchlist error for ${email}: ${watchlistError.message}`)
+      skipped++
+      continue
+    }
+    if (!watchlist || watchlist.length === 0) {
+      console.warn(`[sendWeeklyReports] Empty watchlist for ${email}, skipping`)
       skipped++
       continue
     }
@@ -73,7 +80,13 @@ export async function sendWeeklyReports(
       .in('ticker', tickers)
       .eq('week_start', weekStart)
 
-    if (analysesError || !analyses || analyses.length === 0) {
+    if (analysesError) {
+      console.warn(`[sendWeeklyReports] Analyses query error for ${email}: ${analysesError.message}`)
+      skipped++
+      continue
+    }
+    if (!analyses || analyses.length === 0) {
+      console.warn(`[sendWeeklyReports] No analyses found for ${email} (week_start=${weekStart}, tickers=${tickers.join(',')})`)
       skipped++
       continue
     }

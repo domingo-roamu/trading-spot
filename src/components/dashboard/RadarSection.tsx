@@ -229,35 +229,37 @@ export function RadarSection({ rows, watchlistTickers }: RadarSectionProps) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between p-5 border-b border-gray-100">
-        <div className="flex flex-wrap gap-1.5">
-          {SECTOR_FILTERS.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => setSectorFilter(f.value)}
-              className={cn(
-                'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                sectorFilter === f.value
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              )}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
+      <div className="p-4 sm:p-5 border-b border-gray-100 space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-1.5 min-w-0">
+            {SECTOR_FILTERS.map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setSectorFilter(f.value)}
+                className={cn(
+                  'rounded-full px-2.5 sm:px-3 py-1 text-xs font-medium transition-colors',
+                  sectorFilter === f.value
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                )}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
 
-        <button
-          onClick={handleRefresh}
-          disabled={refreshStatus === 'loading'}
-          className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0 ml-4"
-        >
-          <RefreshCw
-            size={14}
-            className={refreshStatus === 'loading' ? 'animate-spin' : ''}
-          />
-          {refreshStatus === 'loading' ? 'Actualizando...' : 'Actualizar datos'}
-        </button>
+          <button
+            onClick={handleRefresh}
+            disabled={refreshStatus === 'loading'}
+            className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
+          >
+            <RefreshCw
+              size={14}
+              className={refreshStatus === 'loading' ? 'animate-spin' : ''}
+            />
+            <span className="hidden sm:inline">{refreshStatus === 'loading' ? 'Actualizando...' : 'Actualizar datos'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Refresh status */}
@@ -286,128 +288,119 @@ export function RadarSection({ rows, watchlistTickers }: RadarSectionProps) {
 
       {/* Table */}
       {hasData && (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="border-b border-gray-100 bg-gray-50/50">
-              <tr>
-                <th
-                  className={thClass}
-                  onClick={() => handleSort('ticker')}
-                >
-                  <span className="flex items-center gap-1">
-                    Ticker
-                    <SortIcon col="ticker" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-                <th
-                  className={thClass}
-                  onClick={() => handleSort('name')}
-                >
-                  <span className="flex items-center gap-1">
-                    Empresa
-                    <SortIcon col="name" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-                <th
-                  className={thClass}
-                  onClick={() => handleSort('sector')}
-                >
-                  <span className="flex items-center gap-1">
-                    Sector
-                    <SortIcon col="sector" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-                <th
-                  className={cn(thClass, 'text-right')}
-                  onClick={() => handleSort('price')}
-                >
-                  <span className="flex items-center justify-end gap-1">
-                    Precio
-                    <SortIcon col="price" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-                <th
-                  className={cn(thClass, 'text-right')}
-                  onClick={() => handleSort('change_7d')}
-                >
-                  <span className="flex items-center justify-end gap-1">
-                    Var. 7d
-                    <SortIcon col="change_7d" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-                <th
-                  className={cn(thClass, 'text-right')}
-                  onClick={() => handleSort('change_30d')}
-                >
-                  <span className="flex items-center justify-end gap-1">
-                    Var. 30d
-                    <SortIcon col="change_30d" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wide">
-                  Acción
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {sortedRows.map((row) => {
-                const inWatchlist =
-                  watchlistTickers.has(row.ticker) || sessionAdded.has(row.ticker)
-
-                return (
-                  <tr key={row.ticker} className="hover:bg-gray-50/60 transition-colors">
-                    <td className={cn(tdClass, 'font-mono font-semibold text-gray-900')}>
-                      {row.ticker}
-                    </td>
-                    <td className={cn(tdClass, 'text-gray-700 max-w-[220px] truncate')}>
-                      {row.name}
-                    </td>
-                    <td className={tdClass}>
+        <>
+          {/* Mobile: card layout */}
+          <div className="md:hidden divide-y divide-gray-100">
+            {sortedRows.map((row) => {
+              const inWatchlist = watchlistTickers.has(row.ticker) || sessionAdded.has(row.ticker)
+              return (
+                <div key={row.ticker} className="px-4 py-3 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-semibold text-gray-900 text-sm">{row.ticker}</span>
                       <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
                         {SECTOR_LABELS[row.sector] ?? row.sector}
                       </span>
-                    </td>
-                    <td className={cn(tdClass, 'text-right tabular-nums text-gray-700')}>
+                    </div>
+                    {inWatchlist ? (
+                      <span className="flex items-center gap-1 text-xs text-gray-400 font-medium">
+                        <Check size={12} /> En watchlist
+                      </span>
+                    ) : (
+                      <AddToWatchlistForm
+                        row={row}
+                        onSuccess={() => {
+                          setSessionAdded((prev) => new Set(prev).add(row.ticker))
+                          router.refresh()
+                        }}
+                      />
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 truncate">{row.name}</p>
+                  <div className="flex items-center gap-4 text-xs">
+                    <span className="font-mono text-gray-700">
                       {row.price !== null
                         ? `$${row.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                        : <span className="text-gray-400">—</span>}
-                    </td>
-                    <td className={cn(tdClass, 'text-right tabular-nums')}>
-                      <ChangeBadge value={row.change_7d} />
-                    </td>
-                    <td className={cn(tdClass, 'text-right tabular-nums')}>
-                      <ChangeBadge value={row.change_30d} />
-                    </td>
-                    <td className={cn(tdClass, 'text-right')}>
-                      {inWatchlist ? (
-                        <span className="flex items-center justify-end gap-1 text-xs text-gray-400 font-medium">
-                          <Check size={12} />
-                          En watchlist
-                        </span>
-                      ) : (
-                        <div className="flex justify-end">
-                          <AddToWatchlistForm
-                            row={row}
-                            onSuccess={() => {
-                              setSessionAdded((prev) => new Set(prev).add(row.ticker))
-                              router.refresh()
-                            }}
-                          />
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                        : '—'}
+                    </span>
+                    <span className="text-gray-400">7d: <ChangeBadge value={row.change_7d} /></span>
+                    <span className="text-gray-400">30d: <ChangeBadge value={row.change_30d} /></span>
+                  </div>
+                </div>
+              )
+            })}
+            {sortedRows.length === 0 && (
+              <p className="py-8 text-center text-sm text-gray-400">
+                No hay instrumentos para el filtro seleccionado.
+              </p>
+            )}
+          </div>
 
-          {sortedRows.length === 0 && (
-            <p className="py-8 text-center text-sm text-gray-400">
-              No hay instrumentos para el filtro seleccionado.
-            </p>
-          )}
-        </div>
+          {/* Desktop: table layout */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full">
+              <thead className="border-b border-gray-100 bg-gray-50/50">
+                <tr>
+                  <th className={thClass} onClick={() => handleSort('ticker')}>
+                    <span className="flex items-center gap-1">Ticker <SortIcon col="ticker" sortKey={sortKey} sortDir={sortDir} /></span>
+                  </th>
+                  <th className={thClass} onClick={() => handleSort('name')}>
+                    <span className="flex items-center gap-1">Empresa <SortIcon col="name" sortKey={sortKey} sortDir={sortDir} /></span>
+                  </th>
+                  <th className={thClass} onClick={() => handleSort('sector')}>
+                    <span className="flex items-center gap-1">Sector <SortIcon col="sector" sortKey={sortKey} sortDir={sortDir} /></span>
+                  </th>
+                  <th className={cn(thClass, 'text-right')} onClick={() => handleSort('price')}>
+                    <span className="flex items-center justify-end gap-1">Precio <SortIcon col="price" sortKey={sortKey} sortDir={sortDir} /></span>
+                  </th>
+                  <th className={cn(thClass, 'text-right')} onClick={() => handleSort('change_7d')}>
+                    <span className="flex items-center justify-end gap-1">Var. 7d <SortIcon col="change_7d" sortKey={sortKey} sortDir={sortDir} /></span>
+                  </th>
+                  <th className={cn(thClass, 'text-right')} onClick={() => handleSort('change_30d')}>
+                    <span className="flex items-center justify-end gap-1">Var. 30d <SortIcon col="change_30d" sortKey={sortKey} sortDir={sortDir} /></span>
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wide">Acción</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {sortedRows.map((row) => {
+                  const inWatchlist = watchlistTickers.has(row.ticker) || sessionAdded.has(row.ticker)
+                  return (
+                    <tr key={row.ticker} className="hover:bg-gray-50/60 transition-colors">
+                      <td className={cn(tdClass, 'font-mono font-semibold text-gray-900')}>{row.ticker}</td>
+                      <td className={cn(tdClass, 'text-gray-700 max-w-[220px] truncate')}>{row.name}</td>
+                      <td className={tdClass}>
+                        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{SECTOR_LABELS[row.sector] ?? row.sector}</span>
+                      </td>
+                      <td className={cn(tdClass, 'text-right tabular-nums text-gray-700')}>
+                        {row.price !== null
+                          ? `$${row.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                          : <span className="text-gray-400">—</span>}
+                      </td>
+                      <td className={cn(tdClass, 'text-right tabular-nums')}><ChangeBadge value={row.change_7d} /></td>
+                      <td className={cn(tdClass, 'text-right tabular-nums')}><ChangeBadge value={row.change_30d} /></td>
+                      <td className={cn(tdClass, 'text-right')}>
+                        {inWatchlist ? (
+                          <span className="flex items-center justify-end gap-1 text-xs text-gray-400 font-medium"><Check size={12} /> En watchlist</span>
+                        ) : (
+                          <div className="flex justify-end">
+                            <AddToWatchlistForm row={row} onSuccess={() => { setSessionAdded((prev) => new Set(prev).add(row.ticker)); router.refresh() }} />
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+
+            {sortedRows.length === 0 && (
+              <p className="py-8 text-center text-sm text-gray-400">
+                No hay instrumentos para el filtro seleccionado.
+              </p>
+            )}
+          </div>
+        </>
       )}
 
       <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/30 text-xs text-gray-400">

@@ -7,10 +7,10 @@ import type { AnalyticsData, TickerStats, DirectionStats } from '@/lib/analytics
 function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
-      <div className="px-6 py-4 border-b border-gray-100">
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-100">
         <h2 className="text-base font-semibold text-gray-900">{title}</h2>
       </div>
-      <div className="p-6">{children}</div>
+      <div className="p-4 sm:p-6">{children}</div>
     </div>
   )
 }
@@ -20,11 +20,11 @@ function PnlBar({ stats, maxAbsPnl }: { stats: TickerStats; maxAbsPnl: number })
   const isPositive = stats.pnl_net >= 0
 
   return (
-    <div className="flex items-center gap-3">
-      <span className="font-mono text-sm font-semibold text-gray-700 w-16 shrink-0">
+    <div className="flex items-center gap-2 sm:gap-3">
+      <span className="font-mono text-xs sm:text-sm font-semibold text-gray-700 w-12 sm:w-16 shrink-0">
         {stats.ticker}
       </span>
-      <div className="flex-1 h-5 bg-gray-50 rounded overflow-hidden">
+      <div className="flex-1 h-4 sm:h-5 bg-gray-50 rounded overflow-hidden">
         <div
           className={cn('h-full rounded', isPositive ? 'bg-success-500' : 'bg-danger-500')}
           style={{ width: `${Math.max(pct * 100, 2)}%` }}
@@ -32,13 +32,13 @@ function PnlBar({ stats, maxAbsPnl }: { stats: TickerStats; maxAbsPnl: number })
       </div>
       <span
         className={cn(
-          'font-mono text-sm font-semibold w-24 text-right shrink-0',
+          'font-mono text-xs sm:text-sm font-semibold w-20 sm:w-24 text-right shrink-0',
           isPositive ? 'text-success-600' : 'text-danger-600'
         )}
       >
         {formatCurrency(stats.pnl_net)}
       </span>
-      <span className="text-xs text-gray-400 w-12 text-right shrink-0">
+      <span className="text-xs text-gray-400 w-10 sm:w-12 text-right shrink-0 hidden sm:block">
         {stats.trades} op.
       </span>
     </div>
@@ -104,18 +104,18 @@ function TradeRow({ trade, rank }: { trade: Trade; rank: number }) {
     : ''
 
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b border-gray-50 last:border-0">
+    <div className="flex items-center gap-2 sm:gap-3 py-2.5 border-b border-gray-50 last:border-0">
       <span className="text-xs text-gray-400 w-4 shrink-0">{rank}</span>
-      <span className="font-mono text-sm font-semibold text-gray-800 w-16 shrink-0">
+      <span className="font-mono text-xs sm:text-sm font-semibold text-gray-800 w-12 sm:w-16 shrink-0">
         {trade.ticker}
       </span>
-      <span className="text-xs text-gray-400 flex-1">
+      <span className="text-xs text-gray-400 flex-1 truncate hidden sm:block">
         {buyLabel}
         {sellLabel && ` → ${sellLabel}`}
       </span>
       <span
         className={cn(
-          'font-mono text-sm font-semibold',
+          'font-mono text-xs sm:text-sm font-semibold',
           isPositive ? 'text-success-600' : 'text-danger-600'
         )}
       >
@@ -123,7 +123,7 @@ function TradeRow({ trade, rank }: { trade: Trade; rank: number }) {
       </span>
       <span
         className={cn(
-          'text-xs font-mono w-14 text-right shrink-0',
+          'text-xs font-mono w-12 sm:w-14 text-right shrink-0',
           isPositive ? 'text-success-600' : 'text-danger-600'
         )}
       >

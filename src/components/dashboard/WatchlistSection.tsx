@@ -250,29 +250,29 @@ export function WatchlistSection({ items, count }: WatchlistSectionProps) {
     <>
       {open && <Modal onClose={() => setOpen(false)} />}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Watchlist</h2>
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 gap-3">
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Watchlist</h2>
             <p className="text-xs text-gray-400 mt-0.5">
               {count} instrumento{count !== 1 ? 's' : ''}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={handleRunAnalysis}
               disabled={analysisStatus === 'running' || count === 0}
               title={count === 0 ? 'Agrega instrumentos primero' : 'Generar análisis semanal con IA'}
-              className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-1 sm:gap-1.5 rounded-lg border border-gray-200 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <Sparkles size={15} className={analysisStatus === 'running' ? 'animate-pulse' : ''} />
-              {analysisStatus === 'running' ? 'Analizando...' : 'Analizar'}
+              <span className="hidden sm:inline">{analysisStatus === 'running' ? 'Analizando...' : 'Analizar'}</span>
             </button>
             <button
               onClick={() => setOpen(true)}
-              className="flex items-center gap-1.5 rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+              className="flex items-center gap-1 sm:gap-1.5 rounded-lg bg-gray-900 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white hover:bg-gray-800 transition-colors"
             >
               <Plus size={16} />
-              Agregar
+              <span className="hidden sm:inline">Agregar</span>
             </button>
           </div>
         </div>

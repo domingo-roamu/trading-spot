@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
-  Eye,
   TrendingUp,
   BarChart2,
   Radar,
@@ -33,12 +32,6 @@ const navItems: NavItem[] = [
     icon: <LayoutDashboard size={20} />,
     label: 'Dashboard',
     href: '/dashboard',
-  },
-  {
-    icon: <Eye size={20} />,
-    label: 'Watchlist',
-    href: '/dashboard/watchlist',
-    disabled: true,
   },
   {
     icon: <TrendingUp size={20} />,

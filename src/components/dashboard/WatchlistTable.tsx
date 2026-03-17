@@ -98,7 +98,7 @@ function AnalysisModal({
       <div className="relative z-10 w-full max-w-xl max-h-[88vh] overflow-y-auto rounded-2xl bg-white border border-gray-200 shadow-xl">
 
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 rounded-t-2xl">
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-4 sm:px-6 py-4 rounded-t-2xl">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
@@ -140,7 +140,7 @@ function AnalysisModal({
           )}
         </div>
 
-        <div className="px-6 py-5 space-y-5">
+        <div className="px-4 sm:px-6 py-5 space-y-5">
           {/* Summary */}
           {analysis.summary_es && (
             <div>
@@ -279,7 +279,64 @@ export function WatchlistTable({ items, onAddClick }: WatchlistTableProps) {
         />
       )}
 
-      <div className="overflow-x-auto">
+      {/* Mobile: card layout */}
+      <div className="md:hidden divide-y divide-gray-100">
+        {items.map(({ watchlistItem, analysis, pnlAccumulated }) => {
+          const hasPnl = pnlAccumulated !== 0
+          return (
+            <div key={watchlistItem.id} className="px-4 py-3.5 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="font-mono font-semibold text-gray-900">{watchlistItem.ticker}</span>
+                  {watchlistItem.sector && <SectorBadge sector={watchlistItem.sector} />}
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <RemoveButton ticker={watchlistItem.ticker} />
+                </div>
+              </div>
+              {watchlistItem.name && (
+                <p className="text-xs text-gray-400 truncate">{watchlistItem.name}</p>
+              )}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {analysis?.predicted_direction ? (
+                    <>
+                      <DirectionBadge direction={analysis.predicted_direction} />
+                      {analysis.confidence_level && <ConfidenceBadge level={analysis.confidence_level} />}
+                    </>
+                  ) : (
+                    <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-400">Sin análisis</span>
+                  )}
+                </div>
+                {hasPnl && (
+                  <span className={cn('font-mono text-xs font-medium', pnlAccumulated > 0 ? 'text-success-600' : 'text-danger-600')}>
+                    {pnlAccumulated > 0 ? '+' : ''}{formatCurrency(pnlAccumulated)}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-1.5 pt-1">
+                {analysis ? (
+                  <button
+                    onClick={() => setModalData({ ticker: watchlistItem.ticker, analysis })}
+                    className="rounded-md border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
+                  >
+                    Ver análisis
+                  </button>
+                ) : null}
+                <Link
+                  href={`/dashboard/trades?ticker=${encodeURIComponent(watchlistItem.ticker)}`}
+                  className="rounded-md border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
+                >
+                  + Trade
+                </Link>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Desktop: table layout */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100">
@@ -295,15 +352,12 @@ export function WatchlistTable({ items, onAddClick }: WatchlistTableProps) {
               const hasPnl = pnlAccumulated !== 0
               return (
                 <tr key={watchlistItem.id} className="hover:bg-gray-50/50 transition-colors">
-                  {/* Ticker */}
                   <td className="px-6 py-3.5">
                     <span className="font-mono font-semibold text-gray-900">{watchlistItem.ticker}</span>
                     {watchlistItem.name && (
                       <span className="ml-2 text-xs text-gray-400">{watchlistItem.name}</span>
                     )}
                   </td>
-
-                  {/* Sector */}
                   <td className="px-4 py-3.5">
                     {watchlistItem.sector ? (
                       <SectorBadge sector={watchlistItem.sector} />
@@ -311,8 +365,6 @@ export function WatchlistTable({ items, onAddClick }: WatchlistTableProps) {
                       <span className="text-gray-300">—</span>
                     )}
                   </td>
-
-                  {/* Predicción */}
                   <td className="px-4 py-3.5">
                     {analysis?.predicted_direction ? (
                       <div className="flex items-center gap-1.5 flex-wrap">
@@ -327,8 +379,6 @@ export function WatchlistTable({ items, onAddClick }: WatchlistTableProps) {
                       </span>
                     )}
                   </td>
-
-                  {/* P&L */}
                   <td className="px-4 py-3.5 text-right">
                     {hasPnl ? (
                       <span className={cn('font-mono font-medium', pnlAccumulated > 0 ? 'text-success-600' : 'text-danger-600')}>
@@ -338,8 +388,6 @@ export function WatchlistTable({ items, onAddClick }: WatchlistTableProps) {
                       <span className="font-mono text-gray-300">—</span>
                     )}
                   </td>
-
-                  {/* Actions */}
                   <td className="px-4 py-3.5">
                     <div className="flex items-center justify-end gap-1.5">
                       {analysis ? (

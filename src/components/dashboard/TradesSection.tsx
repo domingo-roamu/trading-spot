@@ -59,8 +59,8 @@ function OpenTradeModal({ onClose, onSuccess, initialTicker }: { onClose: () => 
         </div>
 
         <form ref={formRef} action={formAction} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-gray-700 mb-1">
                 Instrumento <span className="text-danger-600">*</span>
               </label>
@@ -124,7 +124,7 @@ function OpenTradeModal({ onClose, onSuccess, initialTicker }: { onClose: () => 
               />
             </div>
 
-            <div className="col-span-2">
+            <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-gray-700 mb-1">
                 Dirección esperada
               </label>
@@ -244,7 +244,7 @@ function CloseTradeModal({
         <form ref={formRef} action={formAction} className="space-y-4">
           <input type="hidden" name="trade_id" value={trade.id} />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
                 Precio de venta <span className="text-danger-600">*</span>
@@ -277,7 +277,7 @@ function CloseTradeModal({
               />
             </div>
 
-            <div className="col-span-2">
+            <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-gray-700 mb-1">
                 Fecha de venta
               </label>
@@ -414,72 +414,87 @@ function OpenTradesTable({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-gray-100">
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
-              Ticker
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
-              Fecha compra
-            </th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">
-              Precio C.
-            </th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">
-              Acciones
-            </th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">
-              Invertido
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
-              Dir. esp.
-            </th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">
-              Acciones
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-50">
-          {trades.map((trade) => {
-            const invested =
-              (trade.buy_price ?? 0) * (trade.shares ?? 0) + trade.buy_commission
-            return (
-              <tr key={trade.id} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-6 py-3.5">
+    <>
+      {/* Mobile: card layout */}
+      <div className="md:hidden divide-y divide-gray-100">
+        {trades.map((trade) => {
+          const invested = (trade.buy_price ?? 0) * (trade.shares ?? 0) + trade.buy_commission
+          return (
+            <div key={trade.id} className="px-4 py-3.5 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
                   <span className="font-mono font-semibold text-gray-900">{trade.ticker}</span>
-                </td>
-                <td className="px-4 py-3.5 text-gray-600">{formatDate(trade.buy_date)}</td>
-                <td className="px-4 py-3.5 text-right font-mono text-gray-700">
-                  {trade.buy_price != null ? formatCurrency(trade.buy_price) : '—'}
-                </td>
-                <td className="px-4 py-3.5 text-right font-mono text-gray-700">
-                  {trade.shares ?? '—'}
-                </td>
-                <td className="px-4 py-3.5 text-right font-mono text-gray-700">
-                  {formatCurrency(invested)}
-                </td>
-                <td className="px-4 py-3.5">
                   <DirectionBadge direction={trade.predicted_direction} />
-                </td>
-                <td className="px-4 py-3.5">
-                  <div className="flex items-center justify-end gap-1.5">
-                    <button
-                      onClick={() => onClose(trade)}
-                      className="rounded-md border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors"
-                    >
-                      Cerrar
-                    </button>
-                    <DeleteButton tradeId={trade.id} />
-                  </div>
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    </div>
+                </div>
+                <DeleteButton tradeId={trade.id} />
+              </div>
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>{formatDate(trade.buy_date)}</span>
+                <span className="font-mono text-gray-700">{formatCurrency(invested)}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-gray-400">
+                  {trade.shares ?? 0} acc. × {trade.buy_price != null ? formatCurrency(trade.buy_price) : '—'}
+                </span>
+                <button
+                  onClick={() => onClose(trade)}
+                  className="rounded-md border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Desktop: table layout */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-gray-100">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Ticker</th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Fecha compra</th>
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">Precio C.</th>
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">Acciones</th>
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">Invertido</th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Dir. esp.</th>
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">Acciones</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {trades.map((trade) => {
+              const invested = (trade.buy_price ?? 0) * (trade.shares ?? 0) + trade.buy_commission
+              return (
+                <tr key={trade.id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-6 py-3.5">
+                    <span className="font-mono font-semibold text-gray-900">{trade.ticker}</span>
+                  </td>
+                  <td className="px-4 py-3.5 text-gray-600">{formatDate(trade.buy_date)}</td>
+                  <td className="px-4 py-3.5 text-right font-mono text-gray-700">
+                    {trade.buy_price != null ? formatCurrency(trade.buy_price) : '—'}
+                  </td>
+                  <td className="px-4 py-3.5 text-right font-mono text-gray-700">{trade.shares ?? '—'}</td>
+                  <td className="px-4 py-3.5 text-right font-mono text-gray-700">{formatCurrency(invested)}</td>
+                  <td className="px-4 py-3.5"><DirectionBadge direction={trade.predicted_direction} /></td>
+                  <td className="px-4 py-3.5">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => onClose(trade)}
+                        className="rounded-md border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+                      >
+                        Cerrar
+                      </button>
+                      <DeleteButton tradeId={trade.id} />
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </>
   )
 }
 
@@ -505,104 +520,100 @@ function ClosedTradesTable({ trades }: { trades: Trade[] }) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-gray-100">
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
-              Ticker
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
-              Compra
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
-              Venta
-            </th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">
-              Precio C.
-            </th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">
-              Precio V.
-            </th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">
-              P&L neto
-            </th>
-            <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">
-              ROI
-            </th>
-            <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wide text-gray-400">
-              Predicción
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-50">
-          {trades.map((trade) => {
-            const pnl = trade.profit_loss_net ?? 0
-            const roi = trade.roi_net_pct ?? null
-            const isWin = pnl > 0
-            return (
-              <tr key={trade.id} className="hover:bg-gray-50/50 transition-colors">
-                <td className="px-6 py-3.5">
+    <>
+      {/* Mobile: card layout */}
+      <div className="md:hidden divide-y divide-gray-100">
+        {trades.map((trade) => {
+          const pnl = trade.profit_loss_net ?? 0
+          const roi = trade.roi_net_pct ?? null
+          const isWin = pnl > 0
+          return (
+            <div key={trade.id} className="px-4 py-3.5 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
                   <span className="font-mono font-semibold text-gray-900">{trade.ticker}</span>
-                </td>
-                <td className="px-4 py-3.5 text-gray-600">{formatDate(trade.buy_date)}</td>
-                <td className="px-4 py-3.5 text-gray-600">{formatDate(trade.sell_date)}</td>
-                <td className="px-4 py-3.5 text-right font-mono text-gray-700">
-                  {trade.buy_price != null ? formatCurrency(trade.buy_price) : '—'}
-                </td>
-                <td className="px-4 py-3.5 text-right font-mono text-gray-700">
-                  {trade.sell_price != null ? formatCurrency(trade.sell_price) : '—'}
-                </td>
-                <td className="px-4 py-3.5 text-right">
-                  <span
-                    className={cn(
-                      'font-mono font-medium',
-                      isWin ? 'text-success-600' : pnl < 0 ? 'text-danger-600' : 'text-gray-600'
-                    )}
-                  >
-                    {pnl >= 0 ? '+' : ''}
-                    {formatCurrency(pnl)}
+                  {trade.prediction_correct !== null && (
+                    trade.prediction_correct ? (
+                      <span className="inline-flex items-center rounded-full bg-success-50 border border-success-100 px-1.5 py-0.5 text-xs font-medium text-success-700">✓</span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-danger-50 border border-danger-100 px-1.5 py-0.5 text-xs font-medium text-danger-700">✗</span>
+                    )
+                  )}
+                </div>
+                <span className={cn('font-mono text-sm font-medium', isWin ? 'text-success-600' : pnl < 0 ? 'text-danger-600' : 'text-gray-600')}>
+                  {pnl >= 0 ? '+' : ''}{formatCurrency(pnl)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>{formatDate(trade.buy_date)} → {formatDate(trade.sell_date)}</span>
+                {roi != null && (
+                  <span className={cn('font-mono font-medium', roi >= 0 ? 'text-success-600' : 'text-danger-600')}>
+                    {formatPercent(roi)}
                   </span>
-                </td>
-                <td className="px-4 py-3.5 text-right">
-                  {roi != null ? (
-                    <span
-                      className={cn(
-                        'font-mono font-medium',
-                        roi >= 0 ? 'text-success-600' : 'text-danger-600'
-                      )}
-                    >
-                      {formatPercent(roi)}
+                )}
+              </div>
+              <div className="flex items-center gap-3 text-xs text-gray-400">
+                <span>C: {trade.buy_price != null ? formatCurrency(trade.buy_price) : '—'}</span>
+                <span>V: {trade.sell_price != null ? formatCurrency(trade.sell_price) : '—'}</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Desktop: table layout */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-gray-100">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Ticker</th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Compra</th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-400">Venta</th>
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">Precio C.</th>
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">Precio V.</th>
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">P&L neto</th>
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-400">ROI</th>
+              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wide text-gray-400">Predicción</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {trades.map((trade) => {
+              const pnl = trade.profit_loss_net ?? 0
+              const roi = trade.roi_net_pct ?? null
+              const isWin = pnl > 0
+              return (
+                <tr key={trade.id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-6 py-3.5"><span className="font-mono font-semibold text-gray-900">{trade.ticker}</span></td>
+                  <td className="px-4 py-3.5 text-gray-600">{formatDate(trade.buy_date)}</td>
+                  <td className="px-4 py-3.5 text-gray-600">{formatDate(trade.sell_date)}</td>
+                  <td className="px-4 py-3.5 text-right font-mono text-gray-700">{trade.buy_price != null ? formatCurrency(trade.buy_price) : '—'}</td>
+                  <td className="px-4 py-3.5 text-right font-mono text-gray-700">{trade.sell_price != null ? formatCurrency(trade.sell_price) : '—'}</td>
+                  <td className="px-4 py-3.5 text-right">
+                    <span className={cn('font-mono font-medium', isWin ? 'text-success-600' : pnl < 0 ? 'text-danger-600' : 'text-gray-600')}>
+                      {pnl >= 0 ? '+' : ''}{formatCurrency(pnl)}
                     </span>
-                  ) : (
-                    <span className="text-gray-300">—</span>
-                  )}
-                </td>
-                <td className="px-4 py-3.5 text-center">
-                  {trade.prediction_correct === null ? (
-                    <span className="text-gray-300">—</span>
-                  ) : trade.prediction_correct ? (
-                    <span
-                      className="inline-flex items-center rounded-full bg-success-50 border border-success-100 px-2 py-0.5 text-xs font-medium text-success-700"
-                      title="Predicción correcta"
-                    >
-                      ✓
-                    </span>
-                  ) : (
-                    <span
-                      className="inline-flex items-center rounded-full bg-danger-50 border border-danger-100 px-2 py-0.5 text-xs font-medium text-danger-700"
-                      title="Predicción incorrecta"
-                    >
-                      ✗
-                    </span>
-                  )}
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    </div>
+                  </td>
+                  <td className="px-4 py-3.5 text-right">
+                    {roi != null ? (
+                      <span className={cn('font-mono font-medium', roi >= 0 ? 'text-success-600' : 'text-danger-600')}>{formatPercent(roi)}</span>
+                    ) : (<span className="text-gray-300">—</span>)}
+                  </td>
+                  <td className="px-4 py-3.5 text-center">
+                    {trade.prediction_correct === null ? (
+                      <span className="text-gray-300">—</span>
+                    ) : trade.prediction_correct ? (
+                      <span className="inline-flex items-center rounded-full bg-success-50 border border-success-100 px-2 py-0.5 text-xs font-medium text-success-700" title="Predicción correcta">✓</span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-danger-50 border border-danger-100 px-2 py-0.5 text-xs font-medium text-danger-700" title="Predicción incorrecta">✗</span>
+                    )}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </>
   )
 }
 
@@ -638,18 +649,18 @@ export function TradesSection({ openTrades, closedTrades, initialTicker }: Trade
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-100">
           <h2 className="text-base font-semibold text-gray-900">Trades</h2>
           <button
             onClick={() => setOpenBuyModal(true)}
-            className="rounded-lg bg-gray-900 px-3.5 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+            className="rounded-lg bg-gray-900 px-3 sm:px-3.5 py-1.5 text-xs sm:text-sm font-medium text-white hover:bg-gray-800 transition-colors"
           >
-            + Registrar trade
+            + <span className="hidden sm:inline">Registrar </span>trade
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-100 px-6">
+        <div className="flex border-b border-gray-100 px-4 sm:px-6">
           <button
             onClick={() => setActiveTab('open')}
             className={cn(

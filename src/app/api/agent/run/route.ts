@@ -2,7 +2,7 @@
  * POST /api/agent/run
  * Triggers the weekly analysis for the authenticated user's watchlist.
  *
- * GET /api/agent/run  (Vercel Cron — runs every Sunday 8PM UTC)
+ * GET /api/agent/run  (Vercel Cron — runs every Sunday 22:00 UTC)
  * Secured with Authorization: Bearer {CRON_SECRET}
  * Analyzes all unique tickers across all users' watchlists.
  */
@@ -59,13 +59,18 @@ export async function POST(request: NextRequest) {
 // ─── Cron trigger (Vercel Cron — all users' tickers) ────────────────────────
 
 export async function GET(request: NextRequest) {
+  console.log('[agent/cron GET] Cron invoked at', new Date().toISOString())
+
   // Verify cron secret
   const authHeader = request.headers.get('authorization')
   const cronSecret = process.env.CRON_SECRET
 
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    console.warn('[agent/cron GET] Unauthorized — missing or invalid CRON_SECRET')
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  console.log('[agent/cron GET] Auth OK, creating service client...')
 
   const serviceClient = createServiceClient()
 
@@ -75,10 +80,12 @@ export async function GET(request: NextRequest) {
     .select('ticker')
 
   if (error) {
+    console.error('[agent/cron GET] Watchlist query failed:', error.message)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
   const uniqueTickers = Array.from(new Set((allTickers ?? []).map((w) => w.ticker)))
+  console.log(`[agent/cron GET] Found ${uniqueTickers.length} unique tickers: ${uniqueTickers.join(', ')}`)
 
   if (uniqueTickers.length === 0) {
     return NextResponse.json({ message: 'No tickers to analyze', weekStart: '' })

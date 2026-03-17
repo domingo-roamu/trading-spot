@@ -46,7 +46,7 @@ export default async function SettingsPage() {
   const totalCost       = allRuns.reduce((s, r) => s + (r.estimated_cost_usd ?? 0), 0)
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-2xl mx-auto">
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-gray-900">Configuración</h1>
         <p className="text-sm text-gray-400 mt-0.5">Gestiona tu perfil, preferencias y cuenta</p>
