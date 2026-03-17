@@ -7,6 +7,7 @@ import { RefreshCw, ChevronUp, ChevronDown, ChevronsUpDown, Check, Plus } from '
 import { addToWatchlistAction, WatchlistState } from '@/lib/watchlist/actions'
 import { RadarRow } from '@/app/(dashboard)/dashboard/radar/page'
 import { RadarSector } from '@/data/radar-tickers'
+import { TickerChart } from '@/components/dashboard/TickerChart'
 import { cn } from '@/lib/utils'
 
 // ── Sector mapping: radar → watchlist SectorType ──────────────────────────────
@@ -181,6 +182,9 @@ export function RadarSection({ rows, watchlistTickers }: RadarSectionProps) {
   // Track tickers added in this session (without a full page reload)
   const [sessionAdded, setSessionAdded] = useState<Set<string>>(new Set())
 
+  // Chart panel state
+  const [chartRow, setChartRow] = useState<RadarRow | null>(null)
+
   const handleSort = (col: SortKey) => {
     if (sortKey === col) {
       setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
@@ -227,6 +231,16 @@ export function RadarSection({ rows, watchlistTickers }: RadarSectionProps) {
   const tdClass = 'px-4 py-3 text-sm'
 
   return (
+    <>
+      {chartRow && (
+        <TickerChart
+          ticker={chartRow.ticker}
+          name={chartRow.name}
+          price={chartRow.price}
+          change7d={chartRow.change_7d}
+          onClose={() => setChartRow(null)}
+        />
+      )}
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="p-4 sm:p-5 border-b border-gray-100 space-y-3">
@@ -294,7 +308,7 @@ export function RadarSection({ rows, watchlistTickers }: RadarSectionProps) {
             {sortedRows.map((row) => {
               const inWatchlist = watchlistTickers.has(row.ticker) || sessionAdded.has(row.ticker)
               return (
-                <div key={row.ticker} className="px-4 py-3 space-y-1.5">
+                <div key={row.ticker} className="px-4 py-3 space-y-1.5 cursor-pointer hover:bg-gray-50/60 transition-colors" onClick={() => setChartRow(row)}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-semibold text-gray-900 text-sm">{row.ticker}</span>
@@ -366,7 +380,7 @@ export function RadarSection({ rows, watchlistTickers }: RadarSectionProps) {
                 {sortedRows.map((row) => {
                   const inWatchlist = watchlistTickers.has(row.ticker) || sessionAdded.has(row.ticker)
                   return (
-                    <tr key={row.ticker} className="hover:bg-gray-50/60 transition-colors">
+                    <tr key={row.ticker} className="hover:bg-gray-50/60 transition-colors cursor-pointer" onClick={() => setChartRow(row)}>
                       <td className={cn(tdClass, 'font-mono font-semibold text-gray-900')}>{row.ticker}</td>
                       <td className={cn(tdClass, 'text-gray-700 max-w-[220px] truncate')}>{row.name}</td>
                       <td className={tdClass}>
@@ -408,5 +422,6 @@ export function RadarSection({ rows, watchlistTickers }: RadarSectionProps) {
         {sectorFilter !== 'all' && ` · filtrado por ${SECTOR_LABELS[sectorFilter] ?? sectorFilter}`}
       </div>
     </div>
+    </>
   )
 }

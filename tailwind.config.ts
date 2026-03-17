@@ -110,9 +110,14 @@ const config: Config = {
           from: { opacity: '0', transform: 'translateY(4px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
+        slideInRight: {
+          from: { transform: 'translateX(100%)' },
+          to: { transform: 'translateX(0)' },
+        },
       },
       animation: {
         'fade-in': 'fadeIn 200ms ease-out',
+        'slide-in-right': 'slideInRight 250ms ease-out',
       },
     },
   },
