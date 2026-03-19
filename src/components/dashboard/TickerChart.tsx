@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { createChart, ColorType, IChartApi, ISeriesApi, LineData, CandlestickData, HistogramData, Time } from 'lightweight-charts'
+import { createChart, ColorType, IChartApi, ISeriesApi, AreaSeries, CandlestickSeries, HistogramSeries, AreaData, CandlestickData, HistogramData, Time } from 'lightweight-charts'
 import { X, BarChart2, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -40,8 +40,8 @@ const RANGES: { value: Range; label: string }[] = [
 export function TickerChart({ ticker, name, price, change7d, onClose }: TickerChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
-  const mainSeriesRef = useRef<ISeriesApi<'Area'> | ISeriesApi<'Candlestick'> | null>(null)
-  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null)
+  const mainSeriesRef = useRef<ISeriesApi<typeof AreaSeries> | ISeriesApi<typeof CandlestickSeries> | null>(null)
+  const volumeSeriesRef = useRef<ISeriesApi<typeof HistogramSeries> | null>(null)
 
   const [range, setRange] = useState<Range>('1M')
   const [chartType, setChartType] = useState<ChartType>('area')
@@ -66,7 +66,10 @@ export function TickerChart({ ticker, name, price, change7d, onClose }: TickerCh
     setError(null)
 
     fetch(`/api/radar/candles?ticker=${encodeURIComponent(ticker)}&range=${range}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Error del servidor (${res.status})`)
+        return res.json()
+      })
       .then((data) => {
         if (cancelled) return
         if (data.error) {
@@ -134,7 +137,7 @@ export function TickerChart({ ticker, name, price, change7d, onClose }: TickerCh
     chartRef.current = chart
 
     // Volume series (always shown as histogram at bottom)
-    const volumeSeries = chart.addHistogramSeries({
+    const volumeSeries = chart.addSeries(HistogramSeries, {
       priceFormat: { type: 'volume' },
       priceScaleId: 'volume',
     })
@@ -153,7 +156,7 @@ export function TickerChart({ ticker, name, price, change7d, onClose }: TickerCh
 
     // Main series
     if (chartType === 'area') {
-      const areaSeries = chart.addAreaSeries({
+      const areaSeries = chart.addSeries(AreaSeries, {
         lineColor: chartColor,
         topColor: isPositive ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)',
         bottomColor: isPositive ? 'rgba(34,197,94,0.02)' : 'rgba(239,68,68,0.02)',
@@ -161,14 +164,14 @@ export function TickerChart({ ticker, name, price, change7d, onClose }: TickerCh
         priceFormat: { type: 'price', minMove: 0.01, precision: 2 },
       })
 
-      const lineData: LineData[] = candles.map((c) => ({
+      const lineData: AreaData[] = candles.map((c) => ({
         time: c.time as Time,
         value: c.close,
       }))
       areaSeries.setData(lineData)
       mainSeriesRef.current = areaSeries
     } else {
-      const candleSeries = chart.addCandlestickSeries({
+      const candleSeries = chart.addSeries(CandlestickSeries, {
         upColor: '#22C55E',
         downColor: '#EF4444',
         borderDownColor: '#EF4444',
